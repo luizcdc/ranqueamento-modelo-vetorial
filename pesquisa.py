@@ -78,8 +78,10 @@ def main():
             args.weighted = (
                 input("Deseja ponderar os termos da consulta? (s/n): ").strip() == "s"
             )
+
     if args.modelo == "booleano":
         print("Modelo booleano selecionado.")
+        resultados = []
         return
     elif args.modelo == "vetorial":
 
@@ -104,6 +106,8 @@ def main():
             weights = np.array([weights[word] for word in split_query]).reshape(1, -1)
 
         resultados = rank_documentos(query, vocab_indexes, weights)
+    else:
+        raise NotImplementedError("Modelo não implementado")
 
     for i, title, link, score in resultados:
         print(f"Rank {i} ({score:.2f}): Título: {title[0:150]}")
