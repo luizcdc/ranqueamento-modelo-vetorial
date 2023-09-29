@@ -1,5 +1,5 @@
 """
-Sistema de Recuperação de Informação - Modelo Vetorial
+Sistema de Recuperação de Informação - Modelo Booleano Extendido
 
 Autores:
 
@@ -48,7 +48,9 @@ documento_csv = "doc.csv"
 documentos = pd.read_csv(documento_csv)
 
 
-def rank_documentos(query: str, vocab_indexes: dict = None, weights: np.array = None) -> list[tuple]:
+def rank_documentos(
+    query: str, vocab_indexes: dict = None, weights: np.array = None
+) -> list[tuple]:
     """
     Realiza o ranqueamento dos documentos de acordo com a query de consulta e os pesos, se fornecidos.
 
@@ -57,9 +59,13 @@ def rank_documentos(query: str, vocab_indexes: dict = None, weights: np.array = 
     :param weights: Pesos para os termos da consulta
     :return: Lista de tuplas (índice do documento, título do documento, link do documento, similaridade)
     """
-    assert (vocab_indexes is not None and weights is not None) or (vocab_indexes is None and weights is None)
+    assert (vocab_indexes is not None and weights is not None) or (
+        vocab_indexes is None and weights is None
+    )
     tfidf_vectorizer = TfidfVectorizer(
-        vocabulary=list(dict.fromkeys(query.lower().split(" "))) if vocab_indexes is None else vocab_indexes,
+        vocabulary=list(dict.fromkeys(query.lower().split(" ")))
+        if vocab_indexes is None
+        else vocab_indexes,
         stop_words="english",
         # sublinear_tf=True
     )
@@ -69,7 +75,9 @@ def rank_documentos(query: str, vocab_indexes: dict = None, weights: np.array = 
     tfidf_matrix = tfidf_vectorizer.fit_transform(documentos["Abstract"])
 
     # Vetorizar a consulta, caso os pesos não tenham sido especificados manualmente
-    query_vector = weights if weights is not None else tfidf_vectorizer.transform([query.lower()])
+    query_vector = (
+        weights if weights is not None else tfidf_vectorizer.transform([query.lower()])
+    )
 
     # Calcular a similaridade entre a consulta e os documentos
     cosine_similarities = cosine_similarity(query_vector, tfidf_matrix).flatten()
@@ -89,7 +97,9 @@ def rank_documentos(query: str, vocab_indexes: dict = None, weights: np.array = 
 def main():
     argparser = argparse.ArgumentParser()
 
-    argparser.add_argument("-q", "--query", help="Query da busca", type=str, required=False)
+    argparser.add_argument(
+        "-q", "--query", help="Query da busca", type=str, required=False
+    )
     argparser.add_argument(
         "-w",
         "--weighted",
@@ -104,7 +114,9 @@ def main():
         query = args.query
     else:
         query = input("Digite sua frase de consulta: ")
-        args.weighted = input("Deseja ponderar os termos da consulta? (s/n): ").strip() == "s"
+        args.weighted = (
+            input("Deseja ponderar os termos da consulta? (s/n): ").strip() == "s"
+        )
 
     weights = vocab_indexes = None
     if args.weighted:
